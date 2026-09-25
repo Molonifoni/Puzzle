@@ -1,64 +1,78 @@
-# Das Observatorium — ein Cicada/Notpron-artiges Rätselspiel
+# Das Observatorium — Notpron-artiges Rätselspiel (schwere Fassung)
 
-Ein kleines, rein statisches Rätselspiel: fünf HTML-Seiten, ein gemeinsames
-Stylesheet, keine Backend-Abhängigkeit. Perfekt für GitHub Pages.
+Rein statisches Rätselspiel ohne jede Bedienoberfläche: keine Formulare,
+keine Richtig/Falsch-Rückmeldung, keine Fortschrittsanzeige, keine Links
+zurück. Die Lösung eines Rätsels ist der Dateiname der nächsten Seite —
+man muss ihn selbst in die Adresszeile eintippen. Findet man ihn nicht,
+gibt es nur eine ganz normale 404-Seite, keinen Hinweis.
 
-## Struktur
+## Struktur & Kette
 
 ```
-orakel-puzzle-game/
-├── index.html      Intro
-├── kapitel1.html    Rätsel 1: Binärcode, versteckt in einem HTML-Kommentar
-├── kapitel2.html    Rätsel 2: Spiegelschrift (CSS scaleX(-1))
-├── kapitel3.html    Rätsel 3: Morsecode
-├── kapitel4.html    Rätsel 4: Logikrätsel (kein Code nötig)
-├── finale.html       Alle vier Lösungswörter als Passphrase + ein
-│                      verstecktes Base64-Easter-Egg im Quelltext
-└── assets/
-    └── style.css     Gemeinsames Dossier-Design
+index.html                        Einstieg. Der Link ins Spiel ist als
+                                   normaler Fließtext getarnt (kein Button).
+  → empfang.html                  Binärcode, aufgeteilt auf zwei
+                                   unsichtbare (display:none) Divs an
+                                   getrennten Stellen im Quelltext.
+      → zeit.html                 Gespiegelter Satz (CSS scaleX(-1)),
+                                   ergibt entspiegelt einen Rätselsatz,
+                                   dessen Antwort erst noch erschlossen
+                                   werden muss.
+          → spiegel.html          Morsecode, aufgeteilt auf zwei
+                                   Off-Screen-Spans (position:absolute;
+                                   left:-9999px), umrahmt von einem
+                                   thematischen Rätseltext.
+              → schatten.html     Reines Logikrätsel, ohne Frageform
+                                   ("Was bin ich?") formuliert.
+                  → echo.html     Letzte Zwischenstation. Sehr vorsichtiger
+                                   Hinweis, dass die vier gefundenen Worte
+                                   am Ende zusammengehören.
+
+Ziel: zeitspiegelschattenecho.html
+      (alle vier Lösungswörter aneinandergehängt, kleingeschrieben,
+       ohne Trenner — muss von Hand in die Adresszeile getippt werden)
 ```
 
-Jede Kapitel-Seite prüft die Antwort per SHA-256-Hash (`crypto.subtle`),
-sodass die Lösung nicht einfach im Klartext im Quelltext steht — im Sinne
-von Notpron/Cicada, wo Nachdenken zählt, nicht nur "Ansicht-Quelltext".
+`assets/style.css` liefert das gemeinsame Dossier-Design. Die CSS-Klassen
+heißen bewusst neutral (`.t-2`, `.t-7`, `.t-0`) statt beschreibend, damit
+das Stylesheet selbst nichts über die Mechanik verrät.
 
 ## Lösungen (nur für dich, Spoiler)
 
 <details>
 <summary>Klicken zum Aufdecken</summary>
 
-- Kapitel 1: `ZEIT` (Binär im HTML-Kommentar: 01011010 01000101 01001001 01010100)
-- Kapitel 2: `SPIEGEL` (Text ist per CSS gespiegelt, im Original lesbar)
-- Kapitel 3: `SCHATTEN` (Morsecode)
-- Kapitel 4: `ECHO` (Logikrätsel)
-- Finale: `zeit spiegel schatten echo` (alle vier, per Leerzeichen getrennt, Groß-/Kleinschreibung egal)
-- Bonus-Easter-Egg im Quelltext von `finale.html`: Base64-codierte Abschlussnachricht
+- `empfang.html`: Binär `01011010 01000101 01001001 01010100` → **ZEIT** → weiter zu `zeit.html`
+- `zeit.html`: gespiegelter Satz "IN MIR SIEHST DU NIE MICH SELBST, NUR DICH, SEITENVERKEHRT" → Antwort **SPIEGEL** → weiter zu `spiegel.html`
+- `spiegel.html`: Morse `... -.-. .... .- - - . -.` (+ Schatten-Thematik im Text) → **SCHATTEN** → weiter zu `schatten.html`
+- `schatten.html`: Logikrätsel (wiederholt Schall, ohne zu sprechen) → **ECHO** → weiter zu `echo.html`
+- `echo.html`: kein weiteres Rätsel, nur der Hinweis, alle vier Worte zusammenzusetzen
+- Finale: `zeitspiegelschattenecho.html`
+- Bonus im Quelltext von `zeitspiegelschattenecho.html`: Base64-Kommentar (unkommentiert, nicht erwähnt)
 
 </details>
 
 ## Lokal testen
 
-`crypto.subtle` (für die Hash-Prüfung) funktioniert aus Sicherheitsgründen
-**nicht** über `file://`. Starte lokal einen simplen Webserver:
+Reines HTML/CSS, kein JavaScript mehr nötig für die Rätsellogik — funktioniert
+auch direkt über `file://`. Ein lokaler Server ist trotzdem praktisch:
 
 ```bash
 cd orakel-puzzle-game
 python3 -m http.server 8000
 ```
 
-Dann im Browser `http://localhost:8000` öffnen. Auf GitHub Pages (https)
-funktioniert es automatisch, ohne weitere Schritte.
-
 ## Eigene Rätsel ergänzen
 
-1. Neue `kapitelX.html` nach dem Muster der bestehenden Seiten anlegen.
-2. Antwort-Hash erzeugen:
-   ```bash
-   python3 -c "import hashlib; print(hashlib.sha256('deinwort'.encode()).hexdigest())"
-   ```
-3. Den Hash als `CORRECT_HASH` einsetzen und `NEXT_PAGE` auf die nächste Datei zeigen lassen.
-4. Fortschrittsanzeige (`.progress`-Punkte) und Verlinkung in den Nachbarseiten anpassen.
+1. Neue Seite nach dem Muster der bestehenden anlegen — keine Formulare,
+   keine erklärenden Absätze, keine Fortschrittsanzeige.
+2. Den Lösungsbegriff als Dateinamen der nächsten Seite verwenden
+   (klein geschrieben, `.html`-Endung).
+3. Versteckte Inhalte über `display:none` oder Off-Screen-Positionierung
+   einbauen, nie über HTML-Kommentare mit Erklärtext — die verraten zu viel.
+4. Wenn ein Rätsel eine Antwort direkt ausgeben würde, stattdessen einen
+   zweiten Schritt einbauen (erst dekodieren, dann die Antwort erschließen).
 
 ## Deployment auf GitHub Pages
 
-Siehe die Schritt-für-Schritt-Anleitung im Chat.
+Siehe die Schritt-für-Schritt-Anleitung im Chat (unverändert gültig).
