@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Übertragung III</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<main class="sheet">
+  <span class="corner-bl"></span><span class="corner-br"></span>
+  <p class="tag">Übertragung III von IV</p>
+  <div class="progress"><span class="done"></span><span class="done"></span><span class="done"></span><span></span></div>
+  <h1>Dritte Übertragung</h1>
+  <p>Kein Ton diesmal, nur ein Blinken. Kurze und lange Pulse, im Rhythmus von etwas, das gelernt hat, im Dunkeln zu sprechen.</p>
+  <div class="transmission">
+    ... &nbsp; -.-. &nbsp; .... &nbsp; .- &nbsp; - &nbsp; - &nbsp; . &nbsp; -.
+  </div>
+  <p class="muted">Kurz ist ein Punkt, lang ist ein Strich. Ein Leerzeichen trennt die Buchstaben.</p>
+
+  <form class="answer" id="form3" autocomplete="off">
+    <input type="text" id="answer3" placeholder="Lösungswort" aria-label="Lösungswort für Übertragung III">
+    <button type="submit">Bestätigen</button>
+  </form>
+  <p class="status" id="status3"></p>
+
+  <p><a class="quiet" href="kapitel2.html">&larr; zweite Übertragung</a></p>
+</main>
+
+<script>
+async function sha256(text) {
+  const enc = new TextEncoder().encode(text.trim().toLowerCase());
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+const CORRECT_HASH = 'a567e9516d3666fde0971199d94f27c1066bcf7679f63a37318a5ccf6ce5471c';
+const NEXT_PAGE = 'kapitel4.html';
+
+document.getElementById('form3').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const status = document.getElementById('status3');
+  const value = document.getElementById('answer3').value;
+  if (!value.trim()) return;
+  const hash = await sha256(value);
+  if (hash === CORRECT_HASH) {
+    status.textContent = 'Bestätigt. Die vierte Übertragung öffnet sich …';
+    status.className = 'status ok';
+    setTimeout(() => { window.location.href = NEXT_PAGE; }, 900);
+  } else {
+    status.textContent = 'Kein Treffer. Das Signal bleibt verschlossen.';
+    status.className = 'status err';
+  }
+});
+</script>
+</body>
+</html>

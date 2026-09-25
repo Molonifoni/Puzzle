@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Übertragung I</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<main class="sheet">
+  <span class="corner-bl"></span><span class="corner-br"></span>
+  <p class="tag">Übertragung I von IV</p>
+  <div class="progress"><span class="done"></span><span></span><span></span><span></span></div>
+  <h1>Erste Übertragung</h1>
+  <p>Das Observatorium spricht nicht in Worten, wenn es zum ersten Mal spricht. Es spricht in der Sprache, die jede Maschine versteht, bevor sie irgendetwas anderes versteht.</p>
+  <div class="transmission">
+    &bull; &bull; &bull; &bull; &bull; &bull; &bull; &bull; — vier Gruppen, still im Gerüst dieser Seite.<br>
+    Öffne den Quelltext. Nicht diese Seite — das, worauf sie gebaut ist.
+  </div>
+  <p class="muted">Acht Stellen pro Gruppe. Jede Gruppe ist ein Buchstabe, jeder Buchstabe ein ASCII-Wert.</p>
+
+  <form class="answer" id="form1" autocomplete="off">
+    <input type="text" id="answer1" placeholder="Lösungswort" aria-label="Lösungswort für Übertragung I">
+    <button type="submit">Bestätigen</button>
+  </form>
+  <p class="status" id="status1"></p>
+
+  <p><a class="quiet" href="index.html">&larr; zurück zum Anfang</a></p>
+</main>
+
+<!--
+  Die Antwort ist im Signal unten codiert. Jedes Byte = ein Buchstabe (ASCII).
+  01011010 01000101 01001001 01010100
+-->
+
+<script>
+async function sha256(text) {
+  const enc = new TextEncoder().encode(text.trim().toLowerCase());
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+const CORRECT_HASH = 'e4aafd8b490317495231d1c9ad7ada935d065aaf2afdc6d1c7a48826da3b3f08';
+const NEXT_PAGE = 'kapitel2.html';
+
+document.getElementById('form1').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const status = document.getElementById('status1');
+  const value = document.getElementById('answer1').value;
+  if (!value.trim()) return;
+  const hash = await sha256(value);
+  if (hash === CORRECT_HASH) {
+    status.textContent = 'Bestätigt. Die zweite Übertragung öffnet sich …';
+    status.className = 'status ok';
+    setTimeout(() => { window.location.href = NEXT_PAGE; }, 900);
+  } else {
+    status.textContent = 'Kein Treffer. Das Signal bleibt verschlossen.';
+    status.className = 'status err';
+  }
+});
+</script>
+</body>
+</html>
