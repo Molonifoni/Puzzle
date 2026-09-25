@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schatten</title>
+<link rel="stylesheet" href="assets/style.css">
+<script defer src="assets/game.js"></script>
+</head>
+<body data-stage="schatten" data-fragment="S">
+<main class="sheet">
+  <span class="corner c3"></span><span class="corner c4"></span>
+  <p class="eyebrow">KANAL 04 · ZEUGENPROTOKOLL</p>
+  <h1>Vier Schalter</h1>
+  <p>Unter dem Turm liegen vier Schalter. Nur einer öffnet die nächste Tür. Jeder Schalter trägt einen Namen und behauptet etwas über die anderen.</p>
+
+  <table class="logic">
+    <thead>
+      <tr><th>Schalter</th><th>Behauptung</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>A — ECHO</td><td>„B ist der falsche Schalter.“</td></tr>
+      <tr><td>B — RAUSCHEN</td><td>„D ist der richtige Schalter.“</td></tr>
+      <tr><td>C — LICHT</td><td>„A ist der falsche Schalter.“</td></tr>
+      <tr><td>D — UHR</td><td>„B ist der falsche Schalter.“</td></tr>
+    </tbody>
+  </table>
+
+  <div class="logic-rules">
+    <p><strong>Regel 1:</strong> Genau zwei der vier Behauptungen sind wahr.</p>
+    <p><strong>Regel 2:</strong> Die Behauptung des richtigen Schalters muss wahr sein.</p>
+    <p><strong>Regel 3:</strong> Die anderen Schalter kennen die richtige Antwort nicht — sie sagen nur, was sie behaupten.</p>
+  </div>
+
+  <p class="quiet">Du brauchst kein Glück. Prüfe jeden möglichen richtigen Schalter und zähle anschließend die wahren Aussagen.</p>
+
+  <details class="small-hint">
+    <summary>Ein methodischer Hinweis</summary>
+    <p>Teste A, B, C und D einzeln als <em>richtigen</em> Schalter. Genau eine Annahme lässt Regel 1 und Regel 2 gleichzeitig zu.</p>
+  </details>
+
+  <div class="rule"></div>
+  <p class="micro">Der Name des richtigen Schalters ist die nächste Adresse.</p>
+</main>
+</body>
+</html>
